@@ -4,7 +4,6 @@
 namespace Poly
 {
 	class World;
-	class TransformComponent;
 	class RigidBody2DComponent;
 	class Vector;
 }

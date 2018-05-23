@@ -1,7 +1,7 @@
 #pragma once
 
-#include "ComponentBase.hpp"
-#include <Dynarray.hpp>
+#include "ECS/ComponentBase.hpp"
+#include <Collections/Dynarray.hpp>
 
 namespace BT
 {

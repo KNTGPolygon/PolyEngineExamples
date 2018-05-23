@@ -1,7 +1,7 @@
 #pragma once
 
-#include <ComponentBase.hpp>
-#include <Vector.hpp>
+#include <ECS/ComponentBase.hpp>
+#include <Math/Vector.hpp>
 
 namespace SGJ
 {

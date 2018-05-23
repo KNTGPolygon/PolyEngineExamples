@@ -1,8 +1,8 @@
 #pragma once
 
-#include <ResourceManager.hpp>
-#include <ResourceBase.hpp>
-#include <Dynarray.hpp>
+#include <Resources/ResourceManager.hpp>
+#include <Resources/ResourceBase.hpp>
+#include <Collections/Dynarray.hpp>
 
 namespace SGJ
 {

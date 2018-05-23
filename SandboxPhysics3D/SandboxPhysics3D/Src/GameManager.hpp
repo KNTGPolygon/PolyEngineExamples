@@ -1,6 +1,6 @@
 #pragma once
 
-#include <World.hpp>
+#include <ECS/World.hpp>
 
 namespace BT
 {

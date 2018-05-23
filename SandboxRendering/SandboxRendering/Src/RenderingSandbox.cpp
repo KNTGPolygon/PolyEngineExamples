@@ -5,19 +5,18 @@
 #include "GameManagerWorldComponent.hpp"
 
 #include <Core.hpp>
-#include <DeferredTaskSystem.hpp>
-#include <CameraComponent.hpp>
-#include <TransformComponent.hpp>
-#include <MeshRenderingComponent.hpp>
-#include <FreeFloatMovementComponent.hpp>
-#include <ScreenSpaceTextComponent.hpp>
-#include <DeferredTaskSystem.hpp>
-#include <ViewportWorldComponent.hpp>
-#include <LightSourceComponent.hpp>
-#include <PostprocessSettingsComponent.hpp>
-#include <ResourceManager.hpp>
-#include <TimeWorldComponent.hpp>
-#include <SoundSystem.hpp>
+#include <ECS/DeferredTaskSystem.hpp>
+#include <Rendering/Camera/CameraComponent.hpp>
+#include <Rendering/MeshRenderingComponent.hpp>
+#include <Movement/FreeFloatMovementComponent.hpp>
+#include <UI/ScreenSpaceTextComponent.hpp>
+#include <ECS/DeferredTaskSystem.hpp>
+#include <Rendering/ViewportWorldComponent.hpp>
+#include <Rendering/Lighting/LightSourceComponent.hpp>
+#include <Rendering/PostprocessSettingsComponent.hpp>
+#include <Resources/ResourceManager.hpp>
+#include <Time/TimeWorldComponent.hpp>
+#include <Audio/SoundSystem.hpp>
 
 using namespace Poly;
 

@@ -1,12 +1,11 @@
 #include "CameraMovementSystem.hpp"
 
-#include <World.hpp>
-#include <TimeSystem.hpp>
-#include <CameraComponent.hpp>
-#include <TransformComponent.hpp>
-#include "Rigidbody2DComponent.hpp"
+#include <ECS/World.hpp>
+#include <Time/TimeSystem.hpp>
+#include <Rendering/Camera/CameraComponent.hpp>
+#include "Physics2D/Rigidbody2DComponent.hpp"
 #include "CameraMovementComponent.hpp"
-#include <PostprocessSettingsComponent.hpp>
+#include <Rendering/PostprocessSettingsComponent.hpp>
 
 #include "GameManagerWorldComponent.hpp"
 
@@ -19,15 +18,15 @@ void SGJ::CameraMovementSystem::CameraMovementUpdatePhase(Poly::World* world)
 	//double time = TimeSystem::GetTimerElapsedTime(world, Poly::eEngineTimer::GAMEPLAY);
 
 	GameManagerWorldComponent* gameMgrCmp = world->GetWorldComponent<GameManagerWorldComponent>();
-	UniqueID player = gameMgrCmp->Player;
-	TransformComponent* playerTransCmp = world->GetComponent<TransformComponent>(player);
+	Entity* player = gameMgrCmp->Player.Get();
+	EntityTransform& playerTrans = player->GetTransform();
 	RigidBody2DComponent* rigidbodyCmp = world->GetComponent<RigidBody2DComponent>(player);
 
-	for (auto tuple : world->IterateComponents<CameraComponent, CameraMovementComponent, TransformComponent>())
+	for (auto tuple : world->IterateComponents<CameraComponent, CameraMovementComponent>())
 	{
 		CameraComponent* cameraCmp = std::get<CameraComponent*>(tuple);
 		CameraMovementComponent* cameraMvmtCmp = std::get<CameraMovementComponent*>(tuple);
-		TransformComponent* transformCmp = std::get<TransformComponent*>(tuple);
+		EntityTransform& transform = cameraCmp->GetTransform();
 
 		float velocity = rigidbodyCmp->GetLinearVelocity().LengthSquared();
 		Angle TargetFov = Lerp(60_deg, 47_deg, Clamp(velocity/350.0f, 0.0f, 1.0f));
@@ -49,19 +48,19 @@ void SGJ::CameraMovementSystem::CameraMovementUpdatePhase(Poly::World* world)
 		if (minH > maxH)
 			TargetPosition.Y = minH;
 		else
-			TargetPosition.Y = Clamp(playerTransCmp->GetGlobalTranslation().Y, minH, maxH) + 0.5f;
+			TargetPosition.Y = Clamp(playerTrans.GetGlobalTranslation().Y, minH, maxH) + 0.5f;
 
 		if (minW > maxW)
 			TargetPosition.X = minW;
 		else
-			TargetPosition.X = Clamp(playerTransCmp->GetGlobalTranslation().X, minW, maxW) - 0.5f;
+			TargetPosition.X = Clamp(playerTrans.GetGlobalTranslation().X, minW, maxW) - 0.5f;
 
 		// add lag to translation
 		cameraMvmtCmp->SetTargetTranslation(TargetPosition);
-		Vector Translation = Lerp(transformCmp->GetLocalTranslation(), cameraMvmtCmp->GetTargetTranslation(), 2.0f*deltaTime);
+		Vector Translation = Lerp(transform.GetLocalTranslation(), cameraMvmtCmp->GetTargetTranslation(), 2.0f*deltaTime);
 
 		// sum the camera modified translation
-		transformCmp->SetLocalTranslation(Translation);
+		transform.SetLocalTranslation(Translation);
 
 		//PostprocessSettingsComponent* post = cameraCmp->GetSibling<PostprocessSettingsComponent>();
 		//if (post != nullptr)

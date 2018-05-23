@@ -1,0 +1,6 @@
+11 - Ground
+10 -rocks
+9- silos
+13- antenna
+12 -ground interior
+2,3,5 - Building
