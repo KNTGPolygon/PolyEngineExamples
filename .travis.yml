@@ -66,9 +66,8 @@ script:
   - source /opt/qt59/bin/qt59-env.sh
   - git clone https://github.com/KNTGPolygon/PolyEngine.git
   - ls -l
-  - cd PolyEngine
-  - ls -l
   - cd PolyEngine/PolyEngine/Scripts
+  - ls -l
   - python -u ${TRAVIS_BUILD_DIR}/GlobalGameJam2018Game
   - cd ${TRAVIS_BUILD_DIR}/GlobalGameJam2018Game/Build
   - make
