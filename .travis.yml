@@ -27,12 +27,13 @@ before_install:
   # Add Qt 5.9.2 ppa
   - sudo add-apt-repository --yes ppa:beineri/opt-qt592-trusty
   - sudo apt-get update -qq
-  - sudo apt-get install -qq mesa-common-dev libx11-dev
+  - sudo apt-get install -qq mesa-common-dev libx11-dev git python3.6
   - sudo apt-get install -qq libepoxy-dev libsoil-dev libassimp-dev libfreetype6-dev libopenal-dev libogg-dev libvorbis-dev libbox2d-dev libbullet-dev
   - sudo apt-get -y install qt59base
   # Workaround for not working `sudo apt-get install -qq libsdl2-dev` https://github.com/travis-ci/travis-ci/issues/8317
   - wget https://www.libsdl.org/release/SDL2-2.0.7.tar.gz -O SDL2-2.0.7.tar.gz
   - tar -xzf SDL2-2.0.7.tar.gz
+  - 
 
 install:
   - (cd SDL2-2.0.7 && ./configure && make && sudo make install)
@@ -57,12 +58,12 @@ before_script:
   ############################################################################
   # Go back to the root of the project and setup the build directory
   ############################################################################
+  - git clone https://github.com/KNTGPolygon/PolyEngine.git
   - cd ${TRAVIS_BUILD_DIR}
 
 script:
   - source /opt/qt59/bin/qt59-env.sh
-  - mkdir -p PolyEngine/build
-  - cd PolyEngine/build
-  - cmake -DCMAKE_CXX_COMPILER=$COMPILER -DUSE_BUNDLED_CATCH=ON ..
+  - cd PolyEngine/PolyEngine/Scripts
+  - python3.6 -u ${TRAVIS_BUILD_DIR}/GlobalGameJam2018Game
+  - cd ${TRAVIS_BUILD_DIR}/GlobalGameJam2018Game/Build
   - make
-  - UnitTests/PolyUnitTests
