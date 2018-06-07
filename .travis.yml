@@ -70,6 +70,6 @@ script:
   - ls -l
   - cd PolyEngine/PolyEngine/Scripts
   - ls -l
-  - python ProjectTool.py -u ${TRAVIS_BUILD_DIR}/GlobalGameJam2018Game
+  - python3 ProjectTool.py -u ${TRAVIS_BUILD_DIR}/GlobalGameJam2018Game
   - cd ${TRAVIS_BUILD_DIR}/GlobalGameJam2018Game/Build
   - make
