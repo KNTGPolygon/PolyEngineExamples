@@ -7,8 +7,6 @@ notifications:
 
 # Enable C++ support
 language: cpp
-python:
-  - "3.6"
 
 # Enable compiler cache to speed up compilation
 cache: ccache
@@ -64,12 +62,21 @@ before_script:
 
 script:
   - source /opt/qt59/bin/qt59-env.sh
-  - python --version
-  - python3 --version
   - git clone https://github.com/KNTGPolygon/PolyEngine.git
-  - ls -l
+
+  ############################################################################
+  # Create makefiles for each game
+  ############################################################################
   - cd PolyEngine/PolyEngine/Scripts
-  - ls -l
   - python3 ProjectTool.py -u ${TRAVIS_BUILD_DIR}/GlobalGameJam2018Game
-  - cd ${TRAVIS_BUILD_DIR}/GlobalGameJam2018Game/Build
-  - make
+  - python3 ProjectTool.py -u ${TRAVIS_BUILD_DIR}/SandboxPhysics3D
+  - python3 ProjectTool.py -u ${TRAVIS_BUILD_DIR}/SandboxRendering
+  - python3 ProjectTool.py -u ${TRAVIS_BUILD_DIR}/SGJ2017Game
+
+  ############################################################################
+  # Build each game
+  ############################################################################
+  - cd ${TRAVIS_BUILD_DIR}/GlobalGameJam2018Game/Build && make
+  - cd ${TRAVIS_BUILD_DIR}/SandboxPhysics3D/Build && make
+  - cd ${TRAVIS_BUILD_DIR}/SandboxRendering/Build && make
+  - cd ${TRAVIS_BUILD_DIR}/SGJ2017Game/Build && make
