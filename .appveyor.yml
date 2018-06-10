@@ -48,14 +48,14 @@ before_build:
     cd C:\projects
     git clone https://github.com/KNTGPolygon/PolyEngine.git
     cd C:\projects\PolyEngine\PolyEngine\Scripts
-    python ProjectTool.py -u $(PROJECT_PATH)
+    python ProjectTool.py -u %PROJECT_PATH%
 #    python ProjectTool.py -u C:\projects\PolyEngineExamples\SandboxPhysics3D
 #    python ProjectTool.py -u C:\projects\PolyEngineExamples\SandboxRendering
 #    python ProjectTool.py -u C:\projects\PolyEngineExamples\SGJ2017Game
     
 
 build:
-  project: $(SOLUTION_PATH)
+  project: %SOLUTION_PATH%
   verbosity: minimal
   parallel: true
 
