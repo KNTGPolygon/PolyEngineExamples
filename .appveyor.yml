@@ -25,6 +25,11 @@ environment:
 matrix:
   fast_finish: true
 
+install:
+  - ps: if (-not(Test-Path($env:PYTHON))) { & appveyor\install.ps1 }
+  - "SET PATH=%PYTHON%;%PYTHON%\\Scripts;%PATH%"
+  - python --version
+
 # skip unsupported combinations
 init:
 - set arch=
@@ -35,14 +40,13 @@ init:
 - if "%APPVEYOR_BUILD_WORKER_IMAGE%"=="Visual Studio 2017" ( set generator="Visual Studio 15 2017%arch%" )
 - if "%APPVEYOR_BUILD_WORKER_IMAGE%"=="Visual Studio 2015" ( set generator="Visual Studio 14 2015%arch%" )
 - echo %generator%
-- python3 --version
 
 before_build:
 - cmd: |-
     cd C:\projects
     git clone https://github.com/KNTGPolygon/PolyEngine.git
     cd C:\projects\PolyEngine\PolyEngine\Scripts
-    python3 ProjectTool.py -u C:\projects\PolyEngineExamples\GlobalGameJam2018Game
+    python ProjectTool.py -u C:\projects\PolyEngineExamples\GlobalGameJam2018Game
 #    python ProjectTool.py -u C:\projects\PolyEngineExamples\SandboxPhysics3D
 #    python ProjectTool.py -u C:\projects\PolyEngineExamples\SandboxRendering
 #    python ProjectTool.py -u C:\projects\PolyEngineExamples\SGJ2017Game
