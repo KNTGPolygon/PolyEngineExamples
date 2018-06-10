@@ -25,7 +25,6 @@ env:
   - GAME_NAME=SandboxPhysics3D
   - GAME_NAME=SandboxRendering
 
-
 before_install:
   - export CXX=${COMPILER}
   # Add Qt 5.9.2 ppa
