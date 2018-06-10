@@ -68,14 +68,7 @@ before_script:
 script:
   - source /opt/qt59/bin/qt59-env.sh
   - git clone https://github.com/KNTGPolygon/PolyEngine.git
-
-  ############################################################################
-  # Create makefiles for each game
-  ############################################################################
   - cd PolyEngine/PolyEngine/Scripts
   - python3 ProjectTool.py -u ${TRAVIS_BUILD_DIR}/${GAME_NAME}
-
-  ############################################################################
-  # Build each game
-  ############################################################################
-  - cd ${TRAVIS_BUILD_DIR}/${GAME_NAME}/Build && make
+  - cd ${TRAVIS_BUILD_DIR}/${GAME_NAME}/Build
+  - make
