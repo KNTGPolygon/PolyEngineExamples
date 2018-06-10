@@ -71,9 +71,9 @@ script:
   # Create makefiles for each game
   ############################################################################
   - cd PolyEngine/PolyEngine/Scripts
-  - python3 ProjectTool.py -u ${TRAVIS_BUILD_DIR}/${GAME_NAME}
+  - python3 ProjectTool.py -u ${TRAVIS_BUILD_DIR}/GlobalGameJam2018Game
 
   ############################################################################
   # Build each game
   ############################################################################
-  - cd ${TRAVIS_BUILD_DIR}/${GAME_NAME}/Build && make
+  - cd ${TRAVIS_BUILD_DIR}/GlobalGameJam2018Game/Build && make
