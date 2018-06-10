@@ -53,7 +53,7 @@ before_build:
     
 
 build:
-  project: C:\projects\PolyEngineExamples\GlobalGameJam2018Game\Build\GlobalGameJam2018.sln
+  project: C:\projects\PolyEngineExamples\GlobalGameJam2018Game\Build\PolyJamGame.sln
   verbosity: minimal
   parallel: true
 
