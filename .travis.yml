@@ -11,17 +11,21 @@ language: cpp
 # Enable compiler cache to speed up compilation
 cache: ccache
 
-matrix:
-  include:
-    - compiler: gcc
-      addons:
-        apt:
-          sources:
-            - ubuntu-toolchain-r-test
-          packages:
-            - g++-6
-      env: COMPILER=g++-6
- 
+compiler: gcc
+addons:
+  apt:
+    sources:
+      - ubuntu-toolchain-r-test
+    packages:
+      - g++-6
+env: COMPILER=g++-6
+env:
+  - GAME_NAME=GlobalGameJam2018Game
+  - GAME_NAME=SGJ2017Game
+  - GAME_NAME=SandboxPhysics3D
+  - GAME_NAME=SandboxRendering
+
+
 before_install:
   - export CXX=${COMPILER}
   # Add Qt 5.9.2 ppa
@@ -68,15 +72,9 @@ script:
   # Create makefiles for each game
   ############################################################################
   - cd PolyEngine/PolyEngine/Scripts
-  - python3 ProjectTool.py -u ${TRAVIS_BUILD_DIR}/GlobalGameJam2018Game
-  - python3 ProjectTool.py -u ${TRAVIS_BUILD_DIR}/SandboxPhysics3D
-  - python3 ProjectTool.py -u ${TRAVIS_BUILD_DIR}/SandboxRendering
-  - python3 ProjectTool.py -u ${TRAVIS_BUILD_DIR}/SGJ2017Game
+  - python3 ProjectTool.py -u ${TRAVIS_BUILD_DIR}/${GAME_NAME}
 
   ############################################################################
   # Build each game
   ############################################################################
-  - cd ${TRAVIS_BUILD_DIR}/GlobalGameJam2018Game/Build && make
-  - cd ${TRAVIS_BUILD_DIR}/SandboxPhysics3D/Build && make
-  - cd ${TRAVIS_BUILD_DIR}/SandboxRendering/Build && make
-  - cd ${TRAVIS_BUILD_DIR}/SGJ2017Game/Build && make
+  - cd ${TRAVIS_BUILD_DIR}/${GAME_NAME}/Build && make
