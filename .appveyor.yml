@@ -13,13 +13,15 @@ platform:
 - x64
 
 environment:
+  QTDIR: C:\Qt\5.10.1\msvc2017_64
+  PATH: '%PATH%;%QTDIR%\bin;'
+  PYTHON: "C:\\Python36-x64"
+  PYTHON_VERSION: "3.6.0"
+  PYTHON_ARCH: "64"
   matrix:
   - arch: Win64
-    QTDIR: C:\Qt\5.10.1\msvc2017_64
-    PATH: '%PATH%;%QTDIR%\bin;'
-    PYTHON: "C:\\Python36-x64"
-    PYTHON_VERSION: "3.6.0"
-    PYTHON_ARCH: "64"
+    PROJECT_PATH: C:\projects\PolyEngineExamples\GlobalGameJam2018Game
+    SOLUTION_PATH: C:\projects\PolyEngineExamples\GlobalGameJam2018Game\Build\PolyJamGame.sln
 
   # - arch: #does not work, Release|x64 not a valid target
 matrix:
@@ -46,14 +48,14 @@ before_build:
     cd C:\projects
     git clone https://github.com/KNTGPolygon/PolyEngine.git
     cd C:\projects\PolyEngine\PolyEngine\Scripts
-    python ProjectTool.py -u C:\projects\PolyEngineExamples\GlobalGameJam2018Game
+    python ProjectTool.py -u $(PROJECT_PATH)
 #    python ProjectTool.py -u C:\projects\PolyEngineExamples\SandboxPhysics3D
 #    python ProjectTool.py -u C:\projects\PolyEngineExamples\SandboxRendering
 #    python ProjectTool.py -u C:\projects\PolyEngineExamples\SGJ2017Game
     
 
 build:
-  project: C:\projects\PolyEngineExamples\GlobalGameJam2018Game\Build\PolyJamGame.sln
+  project: $(SOLUTION_PATH)
   verbosity: minimal
   parallel: true
 
