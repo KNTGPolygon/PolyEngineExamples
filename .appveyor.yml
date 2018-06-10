@@ -13,20 +13,23 @@ platform:
 - x64
 
 environment:
+  arch: Win64
   QTDIR: C:\Qt\5.10.1\msvc2017_64
   PATH: '%PATH%;%QTDIR%\bin;'
   PYTHON: "C:\\Python36-x64"
   PYTHON_VERSION: "3.6.0"
   PYTHON_ARCH: "64"
   matrix:
-  - arch: Win64
-    PROJECT_PATH: C:\projects\PolyEngineExamples\GlobalGameJam2018Game
+  - PROJECT_PATH: C:\projects\PolyEngineExamples\GlobalGameJam2018Game
     SOLUTION_PATH: C:\projects\PolyEngineExamples\GlobalGameJam2018Game\Build\PolyJamGame.sln
+  - PROJECT_PATH: C:\projects\PolyEngineExamples\SGJ2017Game
+    SOLUTION_PATH: C:\projects\PolyEngineExamples\SGJ2017Game\Build\SGJ2017Game.sln
 
   # - arch: #does not work, Release|x64 not a valid target
 matrix:
   fast_finish: true
 
+# install python interpreter
 install:
   - ps: if (-not(Test-Path($env:PYTHON))) { & appveyor\install.ps1 }
   - "SET PATH=%PYTHON%;%PYTHON%\\Scripts;%PATH%"
