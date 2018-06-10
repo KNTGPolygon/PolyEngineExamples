@@ -56,8 +56,6 @@ before_build:
     git clone https://github.com/KNTGPolygon/PolyEngine.git
     cd C:\projects\PolyEngine\PolyEngine\Scripts
     python ProjectTool.py -u %PROJECT_PATH%
-#    python ProjectTool.py -u C:\projects\PolyEngineExamples\SandboxPhysics3D
-#    python ProjectTool.py -u C:\projects\PolyEngineExamples\SandboxRendering
     
 
 build:
