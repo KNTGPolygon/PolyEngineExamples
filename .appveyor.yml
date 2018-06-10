@@ -24,6 +24,10 @@ environment:
     SOLUTION_PATH: C:\projects\PolyEngineExamples\GlobalGameJam2018Game\Build\PolyJamGame.sln
   - PROJECT_PATH: C:\projects\PolyEngineExamples\SGJ2017Game
     SOLUTION_PATH: C:\projects\PolyEngineExamples\SGJ2017Game\Build\SGJ2017Game.sln
+  - PROJECT_PATH: C:\projects\PolyEngineExamples\SandboxPhysics3D
+    SOLUTION_PATH: C:\projects\PolyEngineExamples\SandboxPhysics3D\Build\SandboxPhysics3D.sln
+  - PROJECT_PATH: C:\projects\PolyEngineExamples\SandboxRendering
+    SOLUTION_PATH: C:\projects\PolyEngineExamples\SandboxRendering\Build\SandboxRendering.sln
 
   # - arch: #does not work, Release|x64 not a valid target
 matrix:
@@ -54,7 +58,6 @@ before_build:
     python ProjectTool.py -u %PROJECT_PATH%
 #    python ProjectTool.py -u C:\projects\PolyEngineExamples\SandboxPhysics3D
 #    python ProjectTool.py -u C:\projects\PolyEngineExamples\SandboxRendering
-#    python ProjectTool.py -u C:\projects\PolyEngineExamples\SGJ2017Game
     
 
 build:

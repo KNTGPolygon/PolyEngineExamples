@@ -69,14 +69,14 @@ script:
   ############################################################################
   - cd PolyEngine/PolyEngine/Scripts
   - python3 ProjectTool.py -u ${TRAVIS_BUILD_DIR}/GlobalGameJam2018Game
-  #- python3 ProjectTool.py -u ${TRAVIS_BUILD_DIR}/SandboxPhysics3D
-  #- python3 ProjectTool.py -u ${TRAVIS_BUILD_DIR}/SandboxRendering
+  - python3 ProjectTool.py -u ${TRAVIS_BUILD_DIR}/SandboxPhysics3D
+  - python3 ProjectTool.py -u ${TRAVIS_BUILD_DIR}/SandboxRendering
   - python3 ProjectTool.py -u ${TRAVIS_BUILD_DIR}/SGJ2017Game
 
   ############################################################################
   # Build each game
   ############################################################################
   - cd ${TRAVIS_BUILD_DIR}/GlobalGameJam2018Game/Build && make
-  #- cd ${TRAVIS_BUILD_DIR}/SandboxPhysics3D/Build && make
-  #- cd ${TRAVIS_BUILD_DIR}/SandboxRendering/Build && make
+  - cd ${TRAVIS_BUILD_DIR}/SandboxPhysics3D/Build && make
+  - cd ${TRAVIS_BUILD_DIR}/SandboxRendering/Build && make
   - cd ${TRAVIS_BUILD_DIR}/SGJ2017Game/Build && make
