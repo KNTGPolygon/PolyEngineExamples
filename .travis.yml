@@ -18,12 +18,14 @@ addons:
       - ubuntu-toolchain-r-test
     packages:
       - g++-6
-env: COMPILER=g++-6
-env:
-  - GAME_NAME=GlobalGameJam2018Game
-  - GAME_NAME=SGJ2017Game
-  - GAME_NAME=SandboxPhysics3D
-  - GAME_NAME=SandboxRendering
+env: 
+  global:
+    - COMPILER=g++-6
+  matrix:
+    - GAME_NAME=GlobalGameJam2018Game
+    - GAME_NAME=SGJ2017Game
+    - GAME_NAME=SandboxPhysics3D
+    - GAME_NAME=SandboxRendering
 
 before_install:
   - export CXX=${COMPILER}
@@ -71,9 +73,9 @@ script:
   # Create makefiles for each game
   ############################################################################
   - cd PolyEngine/PolyEngine/Scripts
-  - python3 ProjectTool.py -u ${TRAVIS_BUILD_DIR}/GlobalGameJam2018Game
+  - python3 ProjectTool.py -u ${TRAVIS_BUILD_DIR}/${GAME_NAME}
 
   ############################################################################
   # Build each game
   ############################################################################
-  - cd ${TRAVIS_BUILD_DIR}/GlobalGameJam2018Game/Build && make
+  - cd ${TRAVIS_BUILD_DIR}/${GAME_NAME}/Build && make
