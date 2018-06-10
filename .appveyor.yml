@@ -55,7 +55,7 @@ before_build:
     
 
 build:
-  project: %SOLUTION_PATH%
+  project: $(SOLUTION_PATH)
   verbosity: minimal
   parallel: true
 
