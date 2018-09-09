@@ -18,6 +18,7 @@ class GameManagerWorldComponent : public ComponentBase
 	}
 public:
 	SafePtr<Entity> Camera;
+	CameraComponent* CameraStaticCmp;
 	SafePtr<Entity> KeyDirLight;
 	PostprocessSettingsComponent* PostCmp;
 	SafePtr<Entity> Model;

@@ -80,18 +80,19 @@ void GameManagerSystem::CreateCamera(Scene* scene)
 	GameManagerWorldComponent* gameMgrCmp = scene->GetWorldComponent<GameManagerWorldComponent>();
 
 	Entity* camera = DeferredTaskSystem::SpawnEntityImmediate(scene);
-	DeferredTaskSystem::AddComponentImmediate<CameraComponent>(scene, camera, 35_deg, 1.0f, 5000.f);
+	CameraComponent* cameraCmp = DeferredTaskSystem::AddComponentImmediate<CameraComponent>(scene, camera, 35_deg, 1.0f, 5000.f);
+	cameraCmp->SetRenderingMode(eRenderingModeType::IMMEDIATE_DEBUG);
+
 	DeferredTaskSystem::AddComponentImmediate<FreeFloatMovementComponent>(scene, camera, 100.0f, 0.003f, 10.0f);
 	gameMgrCmp->PostCmp = DeferredTaskSystem::AddComponentImmediate<PostprocessSettingsComponent>(scene, camera);
 	// PostFancy(gameMgrCmp->PostCmp);
 	// PostReset(gameMgrCmp->PostCmp);
 	PostMinimal(gameMgrCmp->PostCmp);
-
-	EntityTransform& cameraTrans = camera->GetTransform();
-	cameraTrans.SetGlobalTranslation(Vector(-550.0f, 180.0f, 0.0f));
-	cameraTrans.SetGlobalRotation(Quaternion(Vector::UNIT_Y, -90.0_deg) * Quaternion(Vector::UNIT_X, -10.0_deg));
+	
+	camera->GetTransform().SetGlobalTranslation(Vector(-550.0f, 180.0f, 0.0f));
+	camera->GetTransform().SetGlobalRotation(Quaternion(Vector::UNIT_Y, -90.0_deg) * Quaternion(Vector::UNIT_X, -10.0_deg));
 	// cameraTrans.SetGlobalRotation(Quaternion(Matrix(cameraTrans.GetGlobalTranslation(), Vector(0.0f, 0.0f, 0.0f))));
-	scene->GetWorldComponent<ViewportWorldComponent>()->SetCamera(0, scene->GetComponent<CameraComponent>(camera));
+	scene->GetWorldComponent<ViewportWorldComponent>()->SetCamera(0, cameraCmp);
 	gameMgrCmp->Camera = camera;
 
 	Entity* keyDirLight = DeferredTaskSystem::SpawnEntityImmediate(scene);
@@ -99,6 +100,17 @@ void GameManagerSystem::CreateCamera(Scene* scene)
 	keyDirLight->GetTransform().SetGlobalRotation(Quaternion(Vector::UNIT_Y, -45_deg) * Quaternion(Vector::UNIT_X, 75_deg));
 	gameMgrCmp->KeyDirLight = keyDirLight;
 	gameMgrCmp->GameEntities.PushBack(keyDirLight);
+
+	Entity* cameraStatic = DeferredTaskSystem::SpawnEntityImmediate(scene);
+	CameraComponent* cameraStaticCmp = DeferredTaskSystem::AddComponentImmediate<CameraComponent>(scene, cameraStatic, 35_deg, 1.0f, 100.f);
+	//cameraStatic->GetTransform().SetGlobalTranslation(Vector(-550.0f, 180.0f, 0.0f));
+	//cameraStatic->GetTransform().SetGlobalRotation(Quaternion(Vector::UNIT_Y, -90.0_deg) * Quaternion(Vector::UNIT_X, -10.0_deg));	
+	gameMgrCmp->CameraStaticCmp = cameraStaticCmp;
+	gameMgrCmp->GameEntities.PushBack(cameraStatic);
+
+	// ViewportWorldComponent* viewportCmp = scene->GetWorldComponent<ViewportWorldComponent>();	
+	// viewportCmp->AddViewport(AARect(Vector2f(0.0f, 0.0f), Vector2f(1.0f, 1.0f)));
+	// scene->GetWorldComponent<ViewportWorldComponent>()->SetCamera(1, cameraStaticCmp);
 }
 
 void GameManagerSystem::PostFancy(PostprocessSettingsComponent* postCmp)
@@ -329,11 +341,74 @@ void GameManagerSystem::Update(Scene* scene)
 	UpdateLights(scene);
 
 	// UpdateModel(scene);
+	
+	// Vector offset = Vector(800.0f, 0.0f, 0.0f);
+	// Vector offset = Vector(0.0f, 0.0f, 0.0f);
+	// DebugDrawSystem::DrawLine(scene, offset, offset + Vector::UNIT_Y * 1000.0f, Color::RED);
+	// DebugDrawSystem::DrawBox(scene, offset + Vector(-100.0f, 0.0f, -100.0f), offset + Vector(100.0f, 200.0f, 100.0f), Color::RED);
 
-	Vector offset = Vector(800.0f, 0.0f, 0.0f);
-	DebugDrawSystem::DrawLine(scene, offset, offset + Vector::UNIT_Y * 1000.0f, Color::RED);
-	DebugDrawSystem::DrawBox(scene, offset + Vector(-100.0f, 0.0f, -100.0f), offset + Vector(100.0f, 200.0f, 100.0f), Color::RED);
+	GameManagerWorldComponent* gameMgrCmp = scene->GetWorldComponent<GameManagerWorldComponent>();
+	Optional<Frustum> frustum = gameMgrCmp->CameraStaticCmp->GetCameraFrustum();
+	EntityTransform& cameraStaticTrans = gameMgrCmp->CameraStaticCmp->GetOwner()->GetTransform();
 
+	gameMgrCmp->CameraStaticCmp->UpdateProjection();
+
+	if (frustum.HasValue()) 
+	{
+		DebugDrawSystem::DrawFrustum(scene, frustum.Value(),
+			cameraStaticTrans.GetGlobalTranslation()
+		);
+	}
+
+	Dynarray<Vector> cornersInNDC = Dynarray<Vector> {
+		Vector(-1.0f, -1.0f,  1.0f),
+		Vector(-1.0f,  1.0f,  1.0f),
+		Vector(-1.0f, -1.0f, -1.0f),
+		Vector(-1.0f,  1.0f, -1.0f),
+		Vector( 1.0f, -1.0f,  1.0f),
+		Vector( 1.0f,  1.0f,  1.0f),
+		Vector( 1.0f, -1.0f, -1.0f),
+		Vector( 1.0f,  1.0f, -1.0f)
+	};
+
+	Matrix ClipFromView;
+	ClipFromView.SetPerspective( 35_deg, 1280.0f / 720.0f, 1.0f, 100.0f );  // 35_deg, 1.0f, 100.f
+	Matrix ViewFromWorld = cameraStaticTrans.GetWorldFromModel().GetInversed();
+	Matrix ClipFromWorld = ClipFromView * ViewFromWorld;
+	Matrix WorldFromClip = ClipFromWorld.GetInversed();
+	
+	Dynarray<Vector> cornersInWorld;
+	for (Vector clip : cornersInNDC)
+	{
+		Vector world = WorldFromClip * clip;
+		world.X /= world.W;
+		world.Y /= world.W;
+		world.Z /= world.W;
+		cornersInWorld.PushBack(world);
+		// DebugDrawSystem::DrawLine(scene, Vector::UNIT_Y * 100.0f + Vector::UNIT_X * 100.0f, world, Color::BLUE);
+	}
+
+	Matrix FirLightFromWorld = gameMgrCmp->KeyDirLight->GetTransform().GetWorldFromModel().GetInversed();
+	Dynarray<Vector> cornersInDirLight;
+	for (Vector world : cornersInWorld)
+	{
+		Vector dirLight = FirLightFromWorld * world;
+		cornersInDirLight.PushBack(dirLight);
+		DebugDrawSystem::DrawLine(scene, world, dirLight, Color::GREEN);
+	}
+
+	const float maxFloat = std::numeric_limits<float>::max();
+	Vector min(maxFloat, maxFloat, maxFloat);
+	Vector max(-maxFloat, -maxFloat, -maxFloat);
+	
+	for (Vector dirLight : cornersInDirLight)
+	{
+		min = Vector::Min(min, dirLight);
+		max = Vector::Max(max, dirLight);
+	}
+	
+	AABox dirLightAABB(min, max - min);
+	DebugDrawSystem::DrawBox(scene, dirLightAABB, Color::RED);
 	// UpdatePostProcess(scene);
 }
 
