@@ -347,6 +347,8 @@ void GameManagerSystem::Update(Scene* scene)
 	// DebugDrawSystem::DrawLine(scene, offset, offset + Vector::UNIT_Y * 1000.0f, Color::RED);
 	// DebugDrawSystem::DrawBox(scene, offset + Vector(-100.0f, 0.0f, -100.0f), offset + Vector(100.0f, 200.0f, 100.0f), Color::RED);
 
+	// following this answer: https://gamedev.stackexchange.com/questions/73851/how-do-i-fit-the-camera-frustum-inside-directional-light-space
+
 	GameManagerWorldComponent* gameMgrCmp = scene->GetWorldComponent<GameManagerWorldComponent>();
 	Optional<Frustum> frustum = gameMgrCmp->CameraStaticCmp->GetCameraFrustum();
 	EntityTransform& cameraStaticTrans = gameMgrCmp->CameraStaticCmp->GetOwner()->GetTransform();
@@ -409,6 +411,7 @@ void GameManagerSystem::Update(Scene* scene)
 	
 	AABox dirLightAABB(min, max - min);
 	DebugDrawSystem::DrawBox(scene, dirLightAABB, Color::RED);
+
 	// UpdatePostProcess(scene);
 }
 
