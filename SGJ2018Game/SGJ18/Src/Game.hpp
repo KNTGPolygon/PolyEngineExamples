@@ -12,8 +12,9 @@ class GAME_DLLEXPORT Game : public Poly::IGame
 public:
 	void RegisterEngine(Poly::Engine* /*engine*/) override {}
 	void Init() override;
+	void InitModelCheck();
 	void InitDebugAnimation();
-	void SpawnParticles(Poly::Scene * world, Poly::Entity * ship);
+	void SpawnParticles(Poly::Scene* world, Poly::Entity* ship);
 	void Deinit() override;
 
 private:

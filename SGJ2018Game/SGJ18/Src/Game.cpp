@@ -8,6 +8,8 @@
 #include "Rendering/Particles/ParticleComponent.hpp"
 #include <Resources/ResourceManager.hpp>
 
+#include "ModelCheckSystem.hpp"
+#include "ModelCheckWorldComponent.hpp"
 #include "CameraManagerSystem.hpp"
 #include "GameManagerWorldComponent.hpp"
 #include <AnimKeys.hpp>
@@ -27,8 +29,17 @@ const static Angle PLAYER_CAMERA_FOV = 60_deg;
 
 void Game::Init()
 {
-	InitDebugAnimation();
+	InitModelCheck();
 
+	// InitDebugAnimation();
+}
+
+void Game::InitModelCheck()
+{
+	DeferredTaskSystem::AddWorldComponentImmediate<ModelCheckWorldComponent>(gEngine->GetActiveScene());
+
+	ModelCheckSystem::CreateScene(gEngine->GetActiveScene());
+	gEngine->RegisterGameUpdatePhase(ModelCheckSystem::Update);
 }
 
 void Game::InitDebugAnimation()
@@ -66,11 +77,11 @@ void Game::InitDebugAnimation()
 	DeferredTaskSystem::AddComponentImmediate<SoundListenerComponent>(world, camera);
 	PostprocessSettingsComponent* postCmp = DeferredTaskSystem::AddComponentImmediate<PostprocessSettingsComponent>(gEngine->GetActiveScene(), camera);
 	postCmp->MotionBlurScale = 0.01f;
-	postCmp->DOFSize = 0.2f;
+	postCmp->DOFSize = 0.1f;
 	postCmp->DOFPoint = 10.0f;
-	postCmp->DOFRange = 20.0f;
+	postCmp->DOFRange = 1000.0f;
 	postCmp->DOFShow = 0.0f;
-	postCmp->Exposure = 2.0f;
+	postCmp->Exposure = 1.0f;
 
 	DeferredTaskSystem::AddComponentImmediate<CameraComponent>(gEngine->GetActiveScene(), camera, PLAYER_CAMERA_FOV, PLAYER_CAMERA_NEAR, PLAYER_CAMERA_FAR);
 	//DeferredTaskSystem::AddComponentImmediate<FreeFloatMovementComponent>(world, camera, 15.0f, 0.01f, 0.1f);
