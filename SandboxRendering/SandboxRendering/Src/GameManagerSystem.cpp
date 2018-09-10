@@ -1,5 +1,7 @@
 #include "GameManagerSystem.hpp"
 
+#include <algorithm>    // std::min
+
 #include "GameManagerWorldComponent.hpp"
 
 #include <Math/Random.hpp>
@@ -34,11 +36,11 @@ void GameManagerSystem::CreateScene(Scene* scene)
 
 	DeferredTaskSystem::AddWorldComponentImmediate<SkyboxWorldComponent>(scene, "HDR/HDR.hdr", eResourceSource::GAME);
 	
-	gameMgrCmp->Model = CreateModel(scene, "Models/leather_shoes/Leather_Shoes.obj");
+	// gameMgrCmp->Model = CreateModel(scene, "Models/leather_shoes/Leather_Shoes.obj");
 	// gameMgrCmp->Model->GetTransform().SetGlobalTranslation(Vector(300.0f, 0.0f, 0.0f));
 	
-	CreateModel(scene, "Models/Primitives/Cube.obj")->GetTransform().SetGlobalScale(Vector(5000.0f, 1.0f, 5000.0f));
-	CreateRandomCubes(scene, 100, Vector(0.0f, 0.0f, 0.0f), Vector(2000.0f, 1.0f, 2000.0f));
+	CreateModel(scene, "Models/Primitives/Cube.obj")->GetTransform().SetGlobalScale(Vector(4000.0f, 1.0f, 4000.0f));
+	CreateRandomCubes(scene, 100, Vector(0.0f, 0.0f, 0.0f), Vector(2000.0f, 100.0f, 2000.0f));
 
 	// CreatePBRShpereGrid(scene, Vector(0.0f, 0.0f, 0.0f), Color(0.0f, 0.0f, 0.0f, 1.0f));
 	// CreatePBRShpereGrid(scene, Vector(-300.0f, 0.0f, 0.0f), Color(0.5f, 0.5f, 0.5f, 1.0f));
@@ -230,10 +232,10 @@ void GameManagerSystem::CreateRandomCubes(Scene* scene, int size, Vector pos, Ve
 		MeshRenderingComponent* meshCmp = DeferredTaskSystem::AddComponentImmediate<MeshRenderingComponent>(scene, cube, "Models/Primitives/Cube.obj", eResourceSource::GAME);
 		meshCmp->SetMaterial(0, Material(Color::BLACK, Color::WHITE * 0.5f, 0.1f, 0.75f, 0.5f));
 
-		EntityTransform& sphereTrans = cube->GetTransform();
+		EntityTransform& cubeTrans = cube->GetTransform();
 
 		Vector rndRot = RandomVectorRange(-1.0f, 1.0f);
-		sphereTrans.SetLocalRotation(
+		cubeTrans.SetLocalRotation(
 			Quaternion(Vector::UNIT_X, 180.0_deg * rndRot.X)
 			* Quaternion(Vector::UNIT_Y, 180.0_deg * rndRot.Y)
 			* Quaternion(Vector::UNIT_Z, 180.0_deg * rndRot.Z)
@@ -245,9 +247,9 @@ void GameManagerSystem::CreateRandomCubes(Scene* scene, int size, Vector pos, Ve
 			rndPos.Y * originScatter.Y,
 			rndPos.Z * originScatter.Z
 		);
-		sphereTrans.SetGlobalTranslation(pos + offsetPos + Vector::UNIT_Y * 200.0f);
+		cubeTrans.SetGlobalTranslation(pos + offsetPos + Vector::UNIT_Y * 200.0f);
 
-		sphereTrans.SetLocalScale(Vector::ONE * 100.0f);
+		cubeTrans.SetLocalScale(Vector::ONE * 100.0f);
 
 		gameMgrCmp->GameEntities.PushBack(cube);
 	}
@@ -334,7 +336,7 @@ void GameManagerSystem::CreateSponzaSample(Scene* scene)
 
 void GameManagerSystem::Update(Scene* scene)
 {
-	UpdateDirLight(scene);
+	// UpdateDirLight(scene);
 
 	UpdateParticles(scene);
 
@@ -346,82 +348,15 @@ void GameManagerSystem::Update(Scene* scene)
 	// Vector offset = Vector(0.0f, 0.0f, 0.0f);
 	// DebugDrawSystem::DrawLine(scene, offset, offset + Vector::UNIT_Y * 1000.0f, Color::RED);
 	// DebugDrawSystem::DrawBox(scene, offset + Vector(-100.0f, 0.0f, -100.0f), offset + Vector(100.0f, 200.0f, 100.0f), Color::RED);
-
-	// following this answer: https://gamedev.stackexchange.com/questions/73851/how-do-i-fit-the-camera-frustum-inside-directional-light-space
-
-	GameManagerWorldComponent* gameMgrCmp = scene->GetWorldComponent<GameManagerWorldComponent>();
-	Optional<Frustum> frustum = gameMgrCmp->CameraStaticCmp->GetCameraFrustum();
-	EntityTransform& cameraStaticTrans = gameMgrCmp->CameraStaticCmp->GetOwner()->GetTransform();
-
-	gameMgrCmp->CameraStaticCmp->UpdateProjection();
-
-	if (frustum.HasValue()) 
-	{
-		DebugDrawSystem::DrawFrustum(scene, frustum.Value(),
-			cameraStaticTrans.GetGlobalTranslation()
-		);
-	}
-
-	Dynarray<Vector> cornersInNDC = Dynarray<Vector> {
-		Vector(-1.0f, -1.0f,  1.0f),
-		Vector(-1.0f,  1.0f,  1.0f),
-		Vector(-1.0f, -1.0f, -1.0f),
-		Vector(-1.0f,  1.0f, -1.0f),
-		Vector( 1.0f, -1.0f,  1.0f),
-		Vector( 1.0f,  1.0f,  1.0f),
-		Vector( 1.0f, -1.0f, -1.0f),
-		Vector( 1.0f,  1.0f, -1.0f)
-	};
-
-	Matrix ClipFromView;
-	ClipFromView.SetPerspective( 35_deg, 1280.0f / 720.0f, 1.0f, 100.0f );  // 35_deg, 1.0f, 100.f
-	Matrix ViewFromWorld = cameraStaticTrans.GetWorldFromModel().GetInversed();
-	Matrix ClipFromWorld = ClipFromView * ViewFromWorld;
-	Matrix WorldFromClip = ClipFromWorld.GetInversed();
-	
-	Dynarray<Vector> cornersInWorld;
-	for (Vector clip : cornersInNDC)
-	{
-		Vector world = WorldFromClip * clip;
-		world.X /= world.W;
-		world.Y /= world.W;
-		world.Z /= world.W;
-		cornersInWorld.PushBack(world);
-		// DebugDrawSystem::DrawLine(scene, Vector::UNIT_Y * 100.0f + Vector::UNIT_X * 100.0f, world, Color::BLUE);
-	}
-
-	Matrix FirLightFromWorld = gameMgrCmp->KeyDirLight->GetTransform().GetWorldFromModel().GetInversed();
-	Dynarray<Vector> cornersInDirLight;
-	for (Vector world : cornersInWorld)
-	{
-		Vector dirLight = FirLightFromWorld * world;
-		cornersInDirLight.PushBack(dirLight);
-		DebugDrawSystem::DrawLine(scene, world, dirLight, Color::GREEN);
-	}
-
-	const float maxFloat = std::numeric_limits<float>::max();
-	Vector min(maxFloat, maxFloat, maxFloat);
-	Vector max(-maxFloat, -maxFloat, -maxFloat);
-	
-	for (Vector dirLight : cornersInDirLight)
-	{
-		min = Vector::Min(min, dirLight);
-		max = Vector::Max(max, dirLight);
-	}
-	
-	AABox dirLightAABB(min, max - min);
-	DebugDrawSystem::DrawBox(scene, dirLightAABB, Color::RED);
-
-	// UpdatePostProcess(scene);
 }
 
 void GameManagerSystem::UpdateDirLight(Poly::Scene * scene)
 {
 	float time = (float)(scene->GetWorldComponent<TimeWorldComponent>()->GetGameplayTime());
-	float anim = SmoothStep(-0.5f, 0.5f, Sin(0.2_rad * time));
-	Angle animDeg = Lerp(60_deg, 85_deg, anim);
+	float anim = SmoothStep(-0.8f, 0.8f, Sin(0.2_rad * time));
+	Angle animDeg = Lerp(0_deg, 90_deg, anim);
 	GameManagerWorldComponent* gameMgrCmp = scene->GetWorldComponent<GameManagerWorldComponent>();
-	gameMgrCmp->KeyDirLight->GetTransform().SetGlobalRotation(Quaternion(Vector::UNIT_Y, -45_deg) * Quaternion(Vector::UNIT_X, animDeg));
+	gameMgrCmp->KeyDirLight->GetTransform().SetGlobalRotation(Quaternion(Vector::UNIT_X, animDeg));
 }
 
 void GameManagerSystem::UpdatePostProcess(Scene* scene)
