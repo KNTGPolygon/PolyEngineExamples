@@ -117,10 +117,6 @@ void Game::InitDebugAnimation()
 
 	DeferredTaskSystem::AddWorldComponentImmediate<SkyboxWorldComponent>(world, "HDR/HDR.hdr", eResourceSource::GAME);
 
-	DeferredTaskSystem::AddWorldComponentImmediate<AmbientLightWorldComponent>(world);
-
-	world->GetWorldComponent<AmbientLightWorldComponent>()->SetColor(Color(0.2f, 0.5f, 1.0f));
-	world->GetWorldComponent<AmbientLightWorldComponent>()->SetIntensity(0.1f);
 	Quaternion DirLightRot = Quaternion(Vector::UNIT_Y, 80_deg) * Quaternion(Vector::UNIT_X, -80_deg);
 
 	Entity* directionalLight = DeferredTaskSystem::SpawnEntityImmediate(world);
