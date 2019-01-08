@@ -2,7 +2,11 @@
 
 #include "RenderingSandbox.hpp"
 #include "GameManagerSystem.hpp"
+#include "ParticleTestSystem.hpp"
+#include "SpriteSheetTestSystem.hpp"
 #include "GameManagerWorldComponent.hpp"
+#include "ParticleTestWorldComponent.hpp"
+#include "SpriteSheetTestWorldComponent.hpp"
 
 #include <Audio/SoundSystem.hpp>
 #include <ECS/DeferredTaskSystem.hpp>
@@ -23,13 +27,23 @@ DEFINE_GAME(RenderingSandbox)
 void RenderingSandbox::Init()
 {
 	gEngine->RegisterGameUpdatePhase(GameManagerSystem::Update);
+	// gEngine->RegisterGameUpdatePhase(ParticleTestSystem::Update);
+	// gEngine->RegisterGameUpdatePhase(SpriteSheetTestSystem::Update);
 
-	DeferredTaskSystem::AddWorldComponentImmediate<GameManagerWorldComponent>(gEngine->GetActiveScene());
+	Scene* scene = gEngine->GetActiveScene();
+	DeferredTaskSystem::AddWorldComponentImmediate<GameManagerWorldComponent>(scene);
+	// DeferredTaskSystem::AddWorldComponentImmediate<ParticleTestWorldComponent>(scene);
+	// DeferredTaskSystem::AddWorldComponentImmediate<SpriteSheetTestWorldComponent>(scene);
 	
-	GameManagerSystem::CreateScene(gEngine->GetActiveScene());
+	GameManagerSystem::Init(scene);
+	// ParticleTestSystem::Init(scene);
+	// SpriteSheetTestSystem::Init(scene);
 };
 
 void RenderingSandbox::Deinit()
 {
-	GameManagerSystem::Deinit(gEngine->GetActiveScene());
+	Scene* scene = gEngine->GetActiveScene();
+	GameManagerSystem::Deinit(scene);
+	// ParticleTestSystem::Deinit(scene);
+	// SpriteSheetTestSystem::Deinit(scene);
 };
