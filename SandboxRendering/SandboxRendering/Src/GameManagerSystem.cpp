@@ -18,6 +18,8 @@
 #include <Time/TimeWorldComponent.hpp>
 #include <UI/ScreenSpaceTextComponent.hpp>
 
+#include <imgui.h>
+
 using namespace Poly;
 
 void GameManagerSystem::CreateScene(Scene* scene)
@@ -153,7 +155,7 @@ void GameManagerSystem::CreatePBRShpereGrid(Scene* scene, Vector pos, Color albe
 			sphereTrans.SetLocalScale(Vector(1.0f, 1.0f, 1.0f) * 20.0f);
 			sphereTrans.SetLocalRotation(Quaternion(Vector::UNIT_Z, 90.0_deg));
 			// MeshRenderingComponent* meshCmp = DeferredTaskSystem::AddComponentImmediate<MeshRenderingComponent>(scene, sphere, "Models/Primitives/Sphere_HighPoly.obj", eResourceSource::GAME);
-			MeshRenderingComponent* meshCmp = DeferredTaskSystem::AddComponentImmediate<MeshRenderingComponent>(scene, sphere, "Models/Primitives/Sphere_LowPoly.obj", eResourceSource::GAME);
+			MeshRenderingComponent* meshCmp = DeferredTaskSystem::AddComponentImmediate<MeshRenderingComponent>(scene, sphere, "Models/Primitives/Sphere_HighPoly.obj", eResourceSource::GAME);
 			size_t materialsNum = meshCmp->GetMesh()->GetSubMeshes().GetSize();
 			for (size_t i = 0; i < materialsNum; ++i)
 			{
@@ -258,6 +260,8 @@ void GameManagerSystem::Update(Scene* scene)
 	UpdateParticles(scene);
 
 	UpdateLights(scene);
+	
+	UpdateImguiWindow();
 
 	// UpdateModel(scene);
 
@@ -266,6 +270,21 @@ void GameManagerSystem::Update(Scene* scene)
 	DebugDrawSystem::DrawBox(scene, offset + Vector(-100.0f, 0.0f, -100.0f), offset + Vector(100.0f, 200.0f, 100.0f), Color::RED);
 
 	// UpdatePostProcess(scene);
+}
+
+void GameManagerSystem::UpdateImguiWindow()
+{
+	if (!ImGui::GetIO().Fonts->IsBuilt())
+		return;
+
+	gConsole.LogInfo("GameManagerSystem::UpdateImguiWindow()");
+
+	ImGui::Begin("Another Window");
+	ImGui::Text("Hello from another window!");
+	if (ImGui::Button("Click"))
+		gConsole.LogInfo("Another Window: Click");
+
+	ImGui::End();
 }
 
 void GameManagerSystem::UpdatePostProcess(Scene* scene)

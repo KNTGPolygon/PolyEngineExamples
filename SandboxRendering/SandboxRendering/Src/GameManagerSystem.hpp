@@ -46,7 +46,9 @@ namespace GameManagerSystem
 	ParticleComponent* SpawnEmitterHeartImpact2(Scene* world, Vector pos);
 	void SpawnHeartSystem(Scene* world);
 
+
 	void Update(Scene* world);
+	void UpdateImguiWindow();
 	void UpdateParticles(Scene* world);
 	void UpdateLights(Scene* world);
 	void UpdateModel(Scene* world);
